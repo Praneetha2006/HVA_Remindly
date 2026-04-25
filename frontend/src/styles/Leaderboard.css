@@ -1,0 +1,109 @@
+.leaderboard {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.leaderboard-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.leaderboard-container h2 {
+  color: white;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.leaderboard-table {
+  width: 100%;
+  background: white;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.leaderboard-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.leaderboard-table th {
+  color: white;
+  padding: 18px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.leaderboard-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid #e0e0e0;
+  color: #333;
+}
+
+.leaderboard-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.leaderboard-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.leaderboard-table tbody tr.top-3 {
+  background: #fff9e6;
+}
+
+.leaderboard-table tbody tr.top-3:hover {
+  background: #fffbf0;
+}
+
+.leaderboard-table .rank {
+  font-weight: 700;
+  font-size: 1.2rem;
+  width: 60px;
+}
+
+.leaderboard-table .points {
+  font-weight: 600;
+  color: #ffc107;
+}
+
+.leaderboard-table .streak {
+  font-weight: 600;
+  color: #ff6b6b;
+}
+
+.leaderboard-table tbody tr:nth-child(1) {
+  background: #fffbf0;
+  border-top: 3px solid #ffc107;
+}
+
+.leaderboard-table tbody tr:nth-child(2) {
+  background: #f0f8ff;
+}
+
+.leaderboard-table tbody tr:nth-child(3) {
+  background: #fff5e6;
+}
+
+@media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 20px;
+  }
+
+  .leaderboard-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .leaderboard-table .rank {
+    width: 50px;
+  }
+}
