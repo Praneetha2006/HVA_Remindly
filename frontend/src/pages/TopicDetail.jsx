@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { topicsAPI, aiAPI } from '../services/api';
+import { topicsAPI, aiAPI, revisionAPI } from '../services/api';
 import { Header } from '../components/Header';
 import '../styles/TopicDetail.css';
 
@@ -48,6 +48,26 @@ export const TopicDetail = () => {
     fetchTopic();
   }, [id]);
 
+
+  useEffect(() => {
+  const checkRevision = async () => {
+    try {
+      const revisions = await revisionAPI.getRevisions();
+
+      const isRevised = revisions.some(
+        (r) => r.topic._id === id && r.completedDate
+      );
+
+      if (isRevised) {
+        setRevisionMarked(true);
+      }
+    } catch (err) {
+      console.error("Error fetching revisions:", err);
+    }
+  };
+
+  checkRevision();
+}, [id]);
   // Mark topic as revised when quiz is completed with score >= 3
   useEffect(() => {
     if (stage === 'result' && quizAnswers.length === 5 && !revisionMarked && !markingRevision) {
@@ -57,7 +77,7 @@ export const TopicDetail = () => {
         const markRevision = async () => {
           setMarkingRevision(true);
           try {
-            const response = await topicsAPI.markTopicRevised(id);
+            const response = await revisionAPI.completeRevision(id, correctCount);
             
             if (response.message || response.success) {
               console.log('✅ Topic marked as revised');
