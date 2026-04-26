@@ -15,10 +15,19 @@ export const addTopic = async (req, res) => {
       });
     }
 
-    if (explanation.length < 50) {
+    // Validate word count (frontend sends 10-100 words)
+    const wordCount = explanation.trim().split(/\s+/).length;
+    if (wordCount < 10) {
       return res.status(400).json({
         success: false,
-        message: "Explanation must be at least 50 words"
+        message: "Explanation must have at least 10 words"
+      });
+    }
+
+    if (wordCount > 100) {
+      return res.status(400).json({
+        success: false,
+        message: "Explanation must not exceed 100 words"
       });
     }
 
@@ -40,8 +49,8 @@ export const addTopic = async (req, res) => {
       nextRevisionAt
     });
 
-    // Create revision schedule with intervals [0, 1, 7, 30] (today, tomorrow, week, month)
-    await createRevisionSchedule(req.user._id, topic._id, [0, 1, 7, 30]);
+    // Create revision schedule with intervals [7, 30] (week, month)
+    await createRevisionSchedule(req.user._id, topic._id, [7, 30]);
 
     // Calculate status dynamically
     const topicObj = topic.toObject();

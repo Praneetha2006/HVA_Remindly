@@ -55,6 +55,26 @@ const userSchema = new mongoose.Schema(
 
     lastLoginAt: {
       type: Date
+    },
+
+    preferences: {
+      theme: {
+        type: String,
+        enum: ["light", "dark"],
+        default: "light"
+      },
+      autoReminders: {
+        type: Boolean,
+        default: true
+      },
+      smartRevisionReminders: {
+        type: Boolean,
+        default: true
+      },
+      reminderTime: {
+        type: String,
+        default: "09:00"
+      }
     }
   },
   {

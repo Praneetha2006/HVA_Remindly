@@ -42,10 +42,13 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('token', authToken);
   };
 
-  const logout = () => {
+  const logout = (navigate) => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
+    if (navigate) {
+      navigate('/signin');
+    }
   };
 
   return (

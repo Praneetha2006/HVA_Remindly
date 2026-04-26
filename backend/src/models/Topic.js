@@ -16,9 +16,7 @@ const topicSchema = new mongoose.Schema(
 
     explanation: {
       type: String,
-      required: true,
-      minlength: 50,
-      maxlength: 200
+      required: true
     },
 
     category: {

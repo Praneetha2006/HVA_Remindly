@@ -13,6 +13,7 @@ import adaptiveQuizRoutes from "./src/routes/adaptiveQuizRoutes.js";
 import aiRoutes from "./src/routes/aiRoutes.js";
 import quizResultsRoutes from "./src/routes/quizResultsRoutes.js";
 import leaderboardRoutes from "./src/routes/leaderboardRoutes.js";
+import settingsRoutes from "./src/routes/settingsRoutes.js";
 
 // Initialize dotenv
 
@@ -41,6 +42,7 @@ app.use("/api/adaptive-quiz", adaptiveQuizRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/quiz-results", quizResultsRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/settings", settingsRoutes);
 
 app.get('/', (req, res) => {
   res.send('Server is up and running!');

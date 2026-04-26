@@ -68,27 +68,37 @@ const generateFallbackQuiz = (title, explanation) => {
   const concepts = explanation.split('.').filter(s => s.trim().length > 10).slice(0, 3);
   const randomFactor = Math.floor(Math.random() * 100); // Add randomization
   
-  // Vary questions based on randomization
+  // Vary questions based on randomization - Create truly diverse questions
   const easyQuestions = [
     {
-      question: `What is the main topic discussed?`,
-      options: [title, "History", "Science", "Literature"],
+      question: `What is the primary subject of "${title}"?`,
+      options: [title, "Ancient history", "Popular culture", "Scientific theory"],
       correctAnswer: title,
-      explanation: `The main topic is ${title}`,
+      explanation: `The primary subject discussed is ${title}`,
       difficulty: "easy"
     },
     {
-      question: `Which of the following is related to ${title}?`,
-      options: [title, "Unrelated concept", "Random fact", "Other topic"],
-      correctAnswer: title,
-      explanation: `${title} is directly related to the main concept`,
+      question: `Which statement best defines ${title}?`,
+      options: [
+        explanation.substring(0, 50) + "...", 
+        "A type of historical event", 
+        "A mathematical concept", 
+        "An unrelated topic"
+      ],
+      correctAnswer: explanation.substring(0, 50) + "...",
+      explanation: `${title} is defined as: ${explanation.substring(0, 80)}...`,
       difficulty: "easy"
     },
     {
-      question: `Can you describe what ${title} is?`,
-      options: [explanation.substring(0, 30) + "...", "Completely unrelated", "Historical event", "Mathematical formula"],
-      correctAnswer: explanation.substring(0, 30) + "...",
-      explanation: `${title} refers to the concept explained in the material`,
+      question: `What key aspect is emphasized when studying ${title}?`,
+      options: [
+        concepts[0] || "Understanding core principles", 
+        "Memorizing dates", 
+        "Ignoring practical applications", 
+        "Following outdated methods"
+      ],
+      correctAnswer: concepts[0] || "Understanding core principles",
+      explanation: `A key aspect of ${title} is understanding its core principles and concepts`,
       difficulty: "easy"
     },
   ];
@@ -97,70 +107,70 @@ const generateFallbackQuiz = (title, explanation) => {
     easy: easyQuestions.sort(() => Math.random() - 0.5).slice(0, 3),
     medium: [
       {
-        question: `What is a key characteristic of ${title}?`,
-        options: ["Understanding core concepts", "Memorization only", "Ignoring details", "Random facts"],
-        correctAnswer: "Understanding core concepts",
-        explanation: `A key characteristic is understanding the core concepts thoroughly`,
+        question: `What is a fundamental concept of ${title}?`,
+        options: ["Understanding core principles", "Memorization only", "Ignoring context", "Random facts"],
+        correctAnswer: "Understanding core principles",
+        explanation: `${title} fundamentally requires understanding its core principles`,
         difficulty: "medium"
       },
       {
-        question: `How would you best describe ${title}?`,
-        options: ["Using theoretical frameworks", "With memorized facts only", "Through random examples", "Without any analysis"],
-        correctAnswer: "Using theoretical frameworks",
-        explanation: `${title} is best described using proper theoretical frameworks`,
+        question: `How should ${title} be approached for better learning?`,
+        options: ["Through analytical study", "With rote memorization", "By avoiding examples", "Without proper context"],
+        correctAnswer: "Through analytical study",
+        explanation: `${title} should be approached analytically to gain deeper understanding`,
         difficulty: "medium"
       },
       {
-        question: `Which best captures the essence of ${title}?`,
-        options: ["The interconnected principles", "Just the definitions", "Only surface-level examples", "Isolated facts"],
-        correctAnswer: "The interconnected principles",
-        explanation: `The essence lies in understanding how different principles interconnect`,
+        question: `What distinguishes ${title} from superficial understanding?`,
+        options: ["Applying concepts in context", "Just reading definitions", "Memorizing facts", "Surface-level examples"],
+        correctAnswer: "Applying concepts in context",
+        explanation: `True understanding of ${title} comes from applying concepts in real contexts`,
         difficulty: "medium"
       },
       {
-        question: `What is essential for mastering ${title}?`,
-        options: ["Deep understanding and application", "Surface-level memorization", "Ignoring context", "Passive reading"],
-        correctAnswer: "Deep understanding and application",
-        explanation: `Mastery requires both deep understanding and practical application`,
+        question: `Why is comprehensive knowledge of ${title} important?`,
+        options: ["For building strong foundations", "For quick answers only", "For surface learning", "For avoiding depth"],
+        correctAnswer: "For building strong foundations",
+        explanation: `Comprehensive knowledge of ${title} builds a strong foundation for advanced learning`,
         difficulty: "medium"
       }
     ].sort(() => Math.random() - 0.5).slice(0, 3),
     hard: [
       {
-        question: `How can you critically apply knowledge of ${title}?`,
-        options: ["Through synthesis and advanced reasoning", "By memorization alone", "Avoiding theory", "Superficial analysis"],
-        correctAnswer: "Through synthesis and advanced reasoning",
-        explanation: `Critical application requires advanced reasoning and synthesis`,
+        question: `How can ${title} be synthesized with broader frameworks?`,
+        options: ["Through interconnected analysis", "By isolation", "Avoiding theory", "Random connections"],
+        correctAnswer: "Through interconnected analysis",
+        explanation: `${title} gains depth when synthesized within broader conceptual frameworks`,
         difficulty: "hard"
       },
       {
-        question: `What broader implications emerge from studying ${title}?`,
-        options: ["Systemic understanding and pattern recognition", "No significant impact", "Narrow specialization only", "Theoretical confusion"],
-        correctAnswer: "Systemic understanding and pattern recognition",
-        explanation: `${title} enables broader systemic understanding across domains`,
+        question: `What complex implications arise from mastering ${title}?`,
+        options: ["Systemic problem-solving capabilities", "Limited usefulness", "Narrow specialization", "Theoretical confusion"],
+        correctAnswer: "Systemic problem-solving capabilities",
+        explanation: `Mastering ${title} enables systemic thinking and advanced problem-solving`,
         difficulty: "hard"
       },
       {
-        question: `Which complex scenario best tests mastery of ${title}?`,
-        options: ["Multi-faceted real-world problem", "Simple textbook case", "Completely unrelated situation", "Hypothetical only"],
-        correctAnswer: "Multi-faceted real-world problem",
-        explanation: `True mastery shows through solving complex, real-world problems`,
+        question: `How would you evaluate critical understanding of ${title}?`,
+        options: ["Through real-world application and analysis", "By simple recall", "Through memorization tests", "Without practical testing"],
+        correctAnswer: "Through real-world application and analysis",
+        explanation: `Critical understanding of ${title} is demonstrated through effective real-world application`,
         difficulty: "hard"
       },
       {
-        question: `How does ${title} connect to broader principles?`,
-        options: ["Through interconnected frameworks", "As isolated concept", "Without broader context", "Randomly associated"],
-        correctAnswer: "Through interconnected frameworks",
-        explanation: `${title} gains depth when connected to broader conceptual frameworks`,
+        question: `What emerging patterns emerge from studying ${title}?`,
+        options: ["Interconnected relationships across domains", "Isolated facts only", "No significant patterns", "Theoretical limitations"],
+        correctAnswer: "Interconnected relationships across domains",
+        explanation: `Studying ${title} reveals interconnected relationships that apply across multiple domains`,
         difficulty: "hard"
       }
     ].sort(() => Math.random() - 0.5).slice(0, 3),
     other: [
       {
-        question: `How would you integrate ${title} with related concepts?`,
-        options: ["By identifying meaningful connections", "By ignoring relationships", "By rote memorization", "By random linking"],
-        correctAnswer: "By identifying meaningful connections",
-        explanation: `Integration through meaningful connections shows comprehensive understanding`,
+        question: `How does ${title} integrate with adjacent concepts?`,
+        options: ["Through identifying meaningful connections", "By ignoring relationships", "Through memorization", "By random association"],
+        correctAnswer: "Through identifying meaningful connections",
+        explanation: `Integration of ${title} with adjacent concepts requires identifying meaningful connections`,
         difficulty: "medium"
       }
     ]

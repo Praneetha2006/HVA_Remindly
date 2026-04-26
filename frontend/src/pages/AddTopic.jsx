@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { topicsAPI } from '../services/api';
+import { topicsAPI, settingsAPI } from '../services/api';
 import '../styles/AddTopic.css';
 
 export const AddTopic = () => {
@@ -19,6 +19,7 @@ export const AddTopic = () => {
   const [initialLoading, setInitialLoading] = useState(isEditMode);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [smartRevisionReminders, setSmartRevisionReminders] = useState(true);
 
   // Load topic data if editing
   useEffect(() => {
@@ -64,6 +65,24 @@ export const AddTopic = () => {
       fetchTopic();
     }
   }, [id, isEditMode]);
+
+  // Fetch user settings to check smartRevisionReminders
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const data = await settingsAPI.getSettings();
+        if (data.success && data.preferences) {
+          setSmartRevisionReminders(data.preferences.smartRevisionReminders !== false);
+        }
+      } catch (err) {
+        console.error('Error fetching settings:', err);
+        // Default to true if there's an error
+        setSmartRevisionReminders(true);
+      }
+    };
+    
+    fetchSettings();
+  }, []);
 
   // Handle content change with word count
   const handleContentChange = (e) => {
@@ -115,26 +134,50 @@ export const AddTopic = () => {
       return false;
     }
 
-    if (remindType === 'days') {
-      if (!reminderDays || reminderDays <= 0) {
-        setError('Please enter a valid number of days');
-        return false;
-      }
-      if (reminderDays > 365) {
-        setError('Reminder days cannot exceed 365 days');
-        return false;
+    // If smartRevisionReminders is disabled, reminder is mandatory
+    if (!smartRevisionReminders) {
+      if (remindType === 'days') {
+        if (!reminderDays || reminderDays <= 0) {
+          setError('Please enter a valid number of days');
+          return false;
+        }
+        if (reminderDays > 365) {
+          setError('Reminder days cannot exceed 365 days');
+          return false;
+        }
+      } else {
+        if (!reminderDate) {
+          setError('Please select a revision date');
+          return false;
+        }
+        const selectedDate = new Date(reminderDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (selectedDate < today) {
+          setError('Please select a future date');
+          return false;
+        }
       }
     } else {
-      if (!reminderDate) {
-        setError('Please select a revision date');
-        return false;
-      }
-      const selectedDate = new Date(reminderDate);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (selectedDate < today) {
-        setError('Please select a future date');
-        return false;
+      // If smartRevisionReminders is enabled, reminder is optional
+      // Only validate if user has provided input
+      if (remindType === 'days' && reminderDays) {
+        if (reminderDays <= 0) {
+          setError('Please enter a valid number of days');
+          return false;
+        }
+        if (reminderDays > 365) {
+          setError('Reminder days cannot exceed 365 days');
+          return false;
+        }
+      } else if (remindType === 'date' && reminderDate) {
+        const selectedDate = new Date(reminderDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (selectedDate < today) {
+          setError('Please select a future date');
+          return false;
+        }
       }
     }
 
@@ -157,15 +200,18 @@ export const AddTopic = () => {
       // Calculate the next revision date
       let nextRevisionDate = null;
       
-      if (remindType === 'days') {
+      // Only set nextRevisionDate if user provided input
+      if (remindType === 'days' && reminderDays && reminderDays > 0) {
         // Calculate date by adding days to today
         const futureDate = new Date();
         futureDate.setDate(futureDate.getDate() + parseInt(reminderDays));
         nextRevisionDate = futureDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-      } else if (remindType === 'date') {
+      } else if (remindType === 'date' && reminderDate) {
         // Use the selected date directly
         nextRevisionDate = reminderDate;
       }
+      // If smartRevisionReminders is enabled and no reminder provided, nextRevisionDate stays null
+      // Backend will handle it by setting to today and creating auto-reminders
 
       let data;
       if (isEditMode) {
@@ -221,11 +267,20 @@ export const AddTopic = () => {
   };
 
   // Check if form is valid
-  const isFormValid = topicName.trim() && 
-    wordCount >= 10 && 
-    wordCount <= 100 && 
-    ((remindType === 'days' && reminderDays && reminderDays > 0) || 
-     (remindType === 'date' && reminderDate));
+  const isFormValid = () => {
+    if (!topicName.trim() || wordCount < 10 || wordCount > 100) {
+      return false;
+    }
+
+    // If smartRevisionReminders is disabled, reminder is mandatory
+    if (!smartRevisionReminders) {
+      return (remindType === 'days' && reminderDays && reminderDays > 0) || 
+             (remindType === 'date' && reminderDate);
+    }
+
+    // If smartRevisionReminders is enabled, reminder is optional
+    return true;
+  };
 
   if (initialLoading) {
     return (
@@ -272,19 +327,26 @@ export const AddTopic = () => {
               disabled={loading}
             />
             <div className={`word-count ${wordCount < 10 || wordCount > 100 ? 'invalid' : 'valid'}`}>
-              {wordCount} / 100 words
+              {wordCount} / 100 words {wordCount < 10 && wordCount > 0 && '(min 10)'}
             </div>
             {wordCount < 10 && wordCount > 0 && (
-              <p className="help-text">Minimum 10 words required</p>
+              <p className="help-text">⚠️ Minimum 10 words required</p>
             )}
             {wordCount > 100 && (
-              <p className="help-text">Maximum 100 words allowed</p>
+              <p className="help-text">⚠️ Maximum 100 words allowed</p>
             )}
           </div>
 
           {/* Reminders Selection */}
           <div className="form-group">
-            <label>Revision Reminder *</label>
+            <label>
+              Revision Reminder {smartRevisionReminders ? '(Optional)' : '*'}
+            </label>
+            {smartRevisionReminders && (
+              <div className="info-message">
+                <p>💡 Smart reminders are enabled! We'll automatically remind you to revise this topic on days 7 and 30. You can optionally set a custom reminder below.</p>
+              </div>
+            )}
             
             {/* Toggle between Days and Date */}
             <div className="reminder-type-toggle">
@@ -358,7 +420,7 @@ export const AddTopic = () => {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={!isFormValid || loading}
+              disabled={!isFormValid() || loading}
             >
               {loading ? (isEditMode ? 'Updating...' : 'Adding...') : (isEditMode ? 'Update Topic' : 'Add Topic')}
             </button>

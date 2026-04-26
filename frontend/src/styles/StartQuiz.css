@@ -1,8 +1,9 @@
 .start-quiz-page {
   min-height: 100vh;
-  background: #080d1a;
-  color: #ffffff;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   padding: 24px 34px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .quiz-header {
@@ -12,13 +13,15 @@
 .quiz-header h1 {
   font-size: 28px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 8px;
+  transition: color 0.3s ease;
 }
 
 .subtitle {
   font-size: 14px;
-  color: #cbd5e1;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
 }
 
 .loading-state {
@@ -31,11 +34,12 @@
 
 .loader {
   font-size: 16px;
-  color: #94a3b8;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
 }
 
 .error-state {
-  background: #1b2638;
+  background: var(--bg-tertiary);
   border-left: 4px solid #ef4444;
   border-radius: 8px;
   padding: 20px;
@@ -43,6 +47,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: background-color 0.3s ease;
 }
 
 .error-state p {
@@ -69,10 +74,11 @@
 .empty-state {
   text-align: center;
   padding: 60px 24px;
-  background: #1b2638;
+  background: var(--bg-tertiary);
   border-radius: 14px;
-  border: 2px dashed #26364f;
+  border: 2px dashed var(--border-light);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .empty-icon {

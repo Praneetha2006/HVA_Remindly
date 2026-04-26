@@ -156,3 +156,25 @@ export const leaderboardAPI = {
     return response.json();
   },
 };
+
+// Settings API
+export const settingsAPI = {
+  getSettings: async () => {
+    const response = await fetch(`${API_URL}/settings`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    return response.json();
+  },
+
+  updateSettings: async (theme, autoReminders, smartRevisionReminders, reminderTime) => {
+    const response = await fetch(`${API_URL}/settings`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({ theme, autoReminders, smartRevisionReminders, reminderTime }),
+    });
+    return response.json();
+  },
+};

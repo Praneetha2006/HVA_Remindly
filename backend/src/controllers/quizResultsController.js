@@ -1,5 +1,6 @@
 import QuizAttempt from "../models/QuizAttempt.js";
 import User from "../models/User.js";
+import { createSmartRevisionSchedule } from "../services/smartRevisionService.js";
 
 export const submitQuizResult = async (req, res) => {
   try {
@@ -19,17 +20,49 @@ export const submitQuizResult = async (req, res) => {
       difficulty: difficulty || "medium"
     });
 
-    // Update user points based on score
+    // Calculate points and percentage score
     const points = Math.round((score / totalQuestions) * 100);
-    await User.findByIdAndUpdate(
+    const scorePercentage = (score / totalQuestions) * 100;
+
+    // Get user to calculate new average
+    const user = await User.findById(req.user._id);
+    const totalQuizzesSoFar = user.totalQuizzes || 0;
+    const currentAverage = user.averageScore || 0;
+    
+    // Calculate new average score
+    const newAverage = ((currentAverage * totalQuizzesSoFar) + scorePercentage) / (totalQuizzesSoFar + 1);
+
+    // Update user with new stats
+    const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
-      { $inc: { points } }
+      { 
+        $inc: { points, totalQuizzes: 1 },
+        $set: { averageScore: Math.round(newAverage * 100) / 100 }
+      },
+      { new: true }
+    );
+
+    // Create smart revision schedule based on quiz performance
+    const revisionSchedule = await createSmartRevisionSchedule(
+      req.user._id,
+      topicId,
+      scorePercentage
     );
 
     res.status(201).json({
       message: "Quiz result submitted successfully",
       result: quizResult,
-      pointsEarned: points
+      pointsEarned: points,
+      stats: {
+        totalQuizzes: updatedUser.totalQuizzes,
+        averageScore: updatedUser.averageScore,
+        totalPoints: updatedUser.points
+      },
+      revisionSchedule: {
+        baseIntervals: revisionSchedule.baseIntervals,
+        adjustedIntervals: revisionSchedule.adjustedIntervals,
+        adaptiveMultiplier: revisionSchedule.adaptiveMultiplier
+      }
     });
   } catch (error) {
     console.error("Error submitting quiz result:", error);
