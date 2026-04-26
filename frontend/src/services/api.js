@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://hva-remindly.onrender.com/api';
 
 // Helper function to get token from localStorage
 const getToken = () => localStorage.getItem('token');
