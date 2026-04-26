@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { topicsAPI } from '../services/api';
+import { calculateTopicStatus, getStatusLabel, getStatusBadgeClass, getDotColor, getRevisionInfo } from '../services/topicUtils';
 import '../styles/MyTopics.css';
 
 export const MyTopics = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -12,7 +14,7 @@ export const MyTopics = () => {
 
   useEffect(() => {
     fetchTopics();
-  }, []);
+  }, [location]); // Refetch whenever location changes (user navigates back)
 
   const fetchTopics = async () => {
     try {
@@ -21,11 +23,9 @@ export const MyTopics = () => {
       const data = await topicsAPI.getAllTopics();
       
       if (data.success && data.topics) {
-        // Calculate status if not provided by backend
+        // Always recalculate status based on topic data for consistency
         const topicsWithStatus = data.topics.map(topic => {
-          if (!topic.status) {
-            topic.status = calculateStatus(topic.nextRevisionAt);
-          }
+          topic.status = calculateStatus(topic);
           return topic;
         });
         setTopics(topicsWithStatus);
@@ -56,25 +56,8 @@ export const MyTopics = () => {
     }
   };
 
-  const calculateStatus = (nextRevisionAt) => {
-    if (!nextRevisionAt) return 'upcoming';
-    
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // Parse date safely using YYYY-MM-DD format (timezone-safe)
-    const dateString = typeof nextRevisionAt === 'string' 
-      ? nextRevisionAt.split('T')[0] 
-      : new Date(nextRevisionAt).toISOString().split('T')[0];
-    const [year, month, day] = dateString.split('-');
-    const revisionDate = new Date(year, month - 1, day);
-    
-    const timeDiff = revisionDate - today;
-    const daysDiff = Math.round(timeDiff / (1000 * 60 * 60 * 24));
-    
-    if (daysDiff < 0) return 'overdue';
-    if (daysDiff === 0) return 'dueToday';
-    return 'upcoming';
+  const calculateStatus = (topic) => {
+    return calculateTopicStatus(topic);
   };
 
   const getFilteredTopics = () => {
@@ -82,90 +65,7 @@ export const MyTopics = () => {
     return topics.filter(topic => topic.status === activeFilter);
   };
 
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case 'overdue': return 'Overdue';
-      case 'dueToday': return 'Due Today';
-      case 'upcoming': return 'Upcoming';
-      case 'completed': return 'Completed';
-      default: return 'Upcoming';
-    }
-  };
-
-  const getStatusBadgeClass = (status) => {
-    switch (status) {
-      case 'overdue': return 'badge-overdue';
-      case 'dueToday': return 'badge-due-today';
-      case 'upcoming': return 'badge-upcoming';
-      case 'completed': return 'badge-completed';
-      default: return 'badge-upcoming';
-    }
-  };
-
-  const getMemoryStrengthClass = (strength) => {
-    if (strength === undefined) return 'badge-new';
-    if (strength >= 70) return 'badge-strong';
-    if (strength >= 40) return 'badge-medium';
-    return 'badge-weak';
-  };
-
-  const getMemoryStrengthText = (strength) => {
-    if (strength === undefined) return 'New';
-    return `${strength}%`;
-  };
-
-  const getDotColor = (status) => {
-    switch (status) {
-      case 'overdue': return 'dot-red';
-      case 'dueToday': return 'dot-orange';
-      case 'upcoming': return 'dot-blue';
-      case 'completed': return 'dot-green';
-      default: return 'dot-blue';
-    }
-  };
-
-  const getRevisionInfo = (topic) => {
-    if (!topic.nextRevisionAt) return 'No reminder scheduled';
-    
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // Parse date safely - handle both string and Date objects
-    let revisionDate;
-    if (typeof topic.nextRevisionAt === 'string') {
-      // Handle ISO string or YYYY-MM-DD format
-      const dateStr = topic.nextRevisionAt.split('T')[0]; // Get YYYY-MM-DD part
-      const [year, month, day] = dateStr.split('-');
-      revisionDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-    } else {
-      // Handle Date object
-      const dateObj = new Date(topic.nextRevisionAt);
-      revisionDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
-    }
-    
-    const timeDiff = revisionDate - today;
-    const daysDiff = Math.round(timeDiff / (1000 * 60 * 60 * 24));
-    
-    // Format date as "Mon, Apr 26"
-    const formattedDate = revisionDate.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric'
-    });
-    
-    if (daysDiff < 0) {
-      const absDays = Math.abs(daysDiff);
-      return `${formattedDate} · ${absDays} day${absDays !== 1 ? 's' : ''} overdue`;
-    }
-    if (daysDiff === 0) {
-      return `${formattedDate} · Today`;
-    }
-    if (daysDiff === 1) {
-      return `${formattedDate} · Tomorrow`;
-    }
-    return `${formattedDate} · in ${daysDiff} days`;
-  };
-
+  // Memory strength helpers (unique to MyTopics)
   const filteredTopics = getFilteredTopics();
 
   return (
@@ -186,6 +86,12 @@ export const MyTopics = () => {
           All
         </button>
         <button
+          className={`filter-btn ${activeFilter === 'revised' ? 'active' : ''}`}
+          onClick={() => setActiveFilter('revised')}
+        >
+          Revised
+        </button>
+        <button
           className={`filter-btn ${activeFilter === 'overdue' ? 'active' : ''}`}
           onClick={() => setActiveFilter('overdue')}
         >
@@ -202,12 +108,6 @@ export const MyTopics = () => {
           onClick={() => setActiveFilter('upcoming')}
         >
           Upcoming
-        </button>
-        <button
-          className={`filter-btn ${activeFilter === 'completed' ? 'active' : ''}`}
-          onClick={() => setActiveFilter('completed')}
-        >
-          Completed
         </button>
       </div>
 
@@ -262,12 +162,9 @@ export const MyTopics = () => {
                     <p className="topic-description">{topic.explanation}</p>
                   </div>
 
-                  {/* Revision Info Row: Text + Memory Badge */}
+                  {/* Revision Info Row */}
                   <div className="card-revision-row">
                     <span className="revision-text">{getRevisionInfo(topic)}</span>
-                    <div className={`memory-badge ${getMemoryStrengthClass(topic.memoryStrength)}`}>
-                      {getMemoryStrengthText(topic.memoryStrength)}
-                    </div>
                   </div>
 
                   {/* Bottom Row: Revise Button + Settings Icon */}

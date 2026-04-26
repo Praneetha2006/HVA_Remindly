@@ -16,9 +16,7 @@ const topicSchema = new mongoose.Schema(
 
     explanation: {
       type: String,
-      required: true,
-      minlength: 50,
-      maxlength: 200
+      required: true
     },
 
     category: {
@@ -37,6 +35,17 @@ const topicSchema = new mongoose.Schema(
 
     nextRevisionAt: {
       type: Date
+    },
+
+    isCompleted: {
+      type: Boolean,
+      default: false
+    },
+
+    status: {
+      type: String,
+      enum: ['upcoming', 'dueToday', 'overdue', 'completed'],
+      default: 'upcoming'
     },
 
     revisionSettings: {

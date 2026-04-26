@@ -284,12 +284,21 @@ export const finishAdaptiveQuiz = async (req, res) => {
     const points =
       quiz.score >= 80 ? 20 : quiz.score >= 50 ? 10 : 5;
 
+    // Get user to calculate new average
+    const user = await User.findById(req.user._id);
+    const totalQuizzesSoFar = user.totalQuizzes || 0;
+    const currentAverage = user.averageScore || 0;
+    
+    // Calculate new average score
+    const newAverage = ((currentAverage * totalQuizzesSoFar) + quiz.score) / (totalQuizzesSoFar + 1);
+
     await User.findByIdAndUpdate(req.user._id, {
       $inc: {
         totalQuizzes: 1,
         totalRevisions: 1,
         points
-      }
+      },
+      $set: { averageScore: Math.round(newAverage * 100) / 100 }
     });
 
     if (quiz.revisionScheduleId) {

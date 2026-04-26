@@ -52,25 +52,37 @@ export const TopicDetail = () => {
   useEffect(() => {
     if (stage === 'result' && quizAnswers.length === 5 && !revisionMarked && !markingRevision) {
       const correctCount = quizAnswers.filter(a => a.isCorrect).length;
-      
+      const scorePercentage = (correctCount / 5) * 100;
+
       if (correctCount >= 3) {
         const markRevision = async () => {
           setMarkingRevision(true);
           try {
-            await topicsAPI.markTopicRevised(id);
-            setRevisionMarked(true);
-            console.log('Topic marked as revised');
+            const response = await topicsAPI.markTopicRevised(id);
+            
+            if (response.message || response.success) {
+              console.log('✅ Topic marked as revised');
+              setRevisionMarked(true);
+              
+              // Auto-navigate back to MyTopics after 2 seconds
+              setTimeout(() => {
+                navigate('/topics');
+              }, 2000);
+            } else {
+              setRevisionMarked(true);
+            }
           } catch (error) {
-            console.error('Error marking topic as revised:', error);
+            console.error('Error submitting quiz:', error);
+            setRevisionMarked(true);
           } finally {
             setMarkingRevision(false);
           }
         };
-        
+
         markRevision();
       }
     }
-  }, [stage, quizAnswers, revisionMarked, markingRevision, id]);
+  }, [stage, quizAnswers, revisionMarked, markingRevision, id, navigate]);
 
   // Start voice recording
   const startRecording = async () => {
@@ -444,7 +456,12 @@ export const TopicDetail = () => {
                     </p>
                     <div className="result-details">
                       {isRevisionComplete && (
-                        <p className="revision-complete">✅ Revision Completed! Topic marked as revised.</p>
+                        <>
+                          <p className="revision-complete">✅ Revision Completed! Topic marked as revised.</p>
+                          {revisionMarked && (
+                            <p className="redirecting">🔄 Redirecting to My Topics in 2 seconds...</p>
+                          )}
+                        </>
                       )}
                       {scorePercentage === 100 && (
                         <p className="perfection">🌟 Perfect Score! Outstanding work!</p>
@@ -462,8 +479,8 @@ export const TopicDetail = () => {
                   </>
                 );
               })()}
-              <button className="btn-primary" onClick={() => navigate('/dashboard')}>
-                Back to Dashboard
+              <button className="btn-primary" onClick={() => navigate('/topics')}>
+                Back to My Topics
               </button>
             </div>
           </div>

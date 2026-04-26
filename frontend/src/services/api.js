@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://hva-remindly.onrender.com/api';
 
 // Helper function to get token from localStorage
 const getToken = () => localStorage.getItem('token');
@@ -79,34 +79,9 @@ export const topicsAPI = {
     return response.json();
   },
 
-  // ❌ OLD (streak trigger nahi karta)
-  /*
   markTopicRevised: async (id) => {
     const response = await fetch(`${API_URL}/topics/${id}/mark-revised`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
-    return response.json();
-  },
-  */
-};
-
-// 🔥 NEW: Revision API (STREAK YAHI SE CHALEGA)
-export const revisionAPI = {
-  completeRevision: async (revisionId, quizScore) => {
-    const response = await fetch(`${API_URL}/revisions/${revisionId}/complete`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${getToken()}`,
-      },
-      body: JSON.stringify({ quizScore }),
-    });
-    return response.json();
-  },
-
-  getRevisions: async () => {
-    const response = await fetch(`${API_URL}/revisions`, {
       headers: { Authorization: `Bearer ${getToken()}` },
     });
     return response.json();
@@ -178,6 +153,51 @@ export const quizAPI = {
 export const leaderboardAPI = {
   getLeaderboard: async () => {
     const response = await fetch(`${API_URL}/leaderboard`);
+    return response.json();
+  },
+};
+
+// Settings API
+export const settingsAPI = {
+  getSettings: async () => {
+    const response = await fetch(`${API_URL}/settings`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    return response.json();
+  },
+
+  updateSettings: async (theme, autoReminders, smartRevisionReminders, reminderTime) => {
+    const response = await fetch(`${API_URL}/settings`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({ theme, autoReminders, smartRevisionReminders, reminderTime }),
+    });
+    return response.json();
+  },
+};
+
+export const revisionAPI = {
+  completeRevision: async (revisionId, quizScore) => {
+    const response = await fetch(`${API_URL}/revisions/${revisionId}/complete`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({ quizScore }),
+    });
+    return response.json();
+  },
+
+  getRevisions: async () => {
+    const response = await fetch(`${API_URL}/revisions`, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
     return response.json();
   },
 };

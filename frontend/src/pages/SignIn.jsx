@@ -24,6 +24,7 @@ export const SignIn = () => {
       const data = await authAPI.signin(formData.email, formData.password);
 
       if (data.success) {
+          localStorage.setItem("token", data.token); // 🔥 ADD THIS LINE
         login(data.user, data.token);
         navigate('/dashboard');
       } else {

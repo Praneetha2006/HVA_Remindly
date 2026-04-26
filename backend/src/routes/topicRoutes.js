@@ -5,12 +5,14 @@ import {
   getTopicById,
   updateTopic,
   deleteTopic,
-  markTopicRevised
+  markTopicRevised,
+  checkAndUpdateStreak
 } from "../controllers/topicController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+router.get("/streak/check", protect, checkAndUpdateStreak);
 router.post("/", protect, addTopic);
 router.get("/", protect, getTopics);
 router.get("/:id", protect, getTopicById);

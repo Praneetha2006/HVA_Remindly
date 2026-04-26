@@ -4,6 +4,48 @@
   box-sizing: border-box;
 }
 
+/* CSS Variables - Dark Theme (Default) */
+:root[data-theme="dark"] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #020617;
+  --bg-tertiary: #1b2638;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --border-color: rgba(255, 255, 255, 0.05);
+  --border-light: rgba(255, 255, 255, 0.1);
+  --accent-primary: #7c3aed;
+  --accent-secondary: #6366f1;
+}
+
+/* CSS Variables - Light Theme */
+:root[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-light: rgba(0, 0, 0, 0.12);
+  --accent-primary: #7c3aed;
+  --accent-secondary: #6366f1;
+}
+
+/* Default to dark theme */
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #020617;
+  --bg-tertiary: #1b2638;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --border-color: rgba(255, 255, 255, 0.05);
+  --border-light: rgba(255, 255, 255, 0.1);
+  --accent-primary: #7c3aed;
+  --accent-secondary: #6366f1;
+}
+
 /* body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -11,12 +53,12 @@
   min-height: 100vh;
 } */
 
-
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: #0f172a;
-  color: #e2e8f0;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {
@@ -121,35 +163,40 @@ select:focus {
 
 .sidebar {
   width: 240px;
-  background: #020617;
+  background: var(--bg-secondary);
   min-height: 100vh;
   padding: 20px;
-  border-right: 1px solid rgba(255,255,255,0.05);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .sidebar h1 {
-  color: #7c3aed;
+  color: var(--accent-primary);
   margin-bottom: 30px;
 }
 
 .menu-title {
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--text-tertiary);
   margin-top: 20px;
+  transition: color 0.3s ease;
 }
 
 .sidebar a {
   display: block;
   padding: 10px;
   border-radius: 10px;
-  color: #94a3b8;
+  color: var(--text-secondary);
   text-decoration: none;
   margin-top: 6px;
+  transition: all 0.3s ease;
 }
 
 .sidebar a:hover {
-  background: rgba(124,58,237,0.2);
-  color: white;
+  background: rgba(124, 58, 237, 0.2);
+  color: var(--text-primary);
 }
 
 .main-content {
@@ -157,5 +204,82 @@ select:focus {
   padding: 20px;
 }
 
+/* Sidebar Footer */
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
+.settings-link {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  color: var(--text-primary);
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 2px solid var(--accent-secondary);
+  transition: all 0.3s ease;
+  text-align: center;
+  cursor: pointer;
+}
 
+.settings-link:hover {
+  background: var(--accent-secondary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.theme-toggle-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-primary) 100%);
+  color: white;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.theme-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.theme-toggle-btn:active {
+  transform: translateY(0);
+}
+
+.logout-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.logout-btn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}

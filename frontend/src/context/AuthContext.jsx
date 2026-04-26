@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
       const storedToken = localStorage.getItem('token');
       if (storedToken) {
         try {
-          const response = await fetch('http://localhost:3000/api/auth/me', {
+          const response = await fetch('https://hva-remindly.onrender.com/api/auth/me', {
             headers: {
               Authorization: `Bearer ${storedToken}`,
             },
@@ -42,10 +42,13 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('token', authToken);
   };
 
-  const logout = () => {
+  const logout = (navigate) => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
+    if (navigate) {
+      navigate('/signin');
+    }
   };
 
   return (

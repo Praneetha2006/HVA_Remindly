@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import '../styles/Header.css';
 
 export const Header = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   if (!user) return null;
 
@@ -16,9 +16,6 @@ export const Header = () => {
         <div className="user-info">
           <span className="points">🎯 {user.totalPoints} Points</span>
           <span className="streak">🔥 {user.streak} Streak</span>
-          <button className="logout-btn" onClick={logout}>
-            Logout
-          </button>
         </div>
       </div>
     </header>

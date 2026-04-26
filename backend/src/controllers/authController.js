@@ -123,8 +123,12 @@ export const getMe = async (req, res) => {
       id: req.user._id,
       name: req.user.name,
       email: req.user.email,
+      points: req.user.points || 0,
       totalPoints: req.user.points || 0,
-      streak: req.user.streak || 0
+      streak: req.user.streak || 0,
+      totalRevisions: req.user.totalRevisions || 0,
+      totalQuizzes: req.user.totalQuizzes || 0,
+      averageScore: req.user.averageScore || 0
     }
   });
 };
