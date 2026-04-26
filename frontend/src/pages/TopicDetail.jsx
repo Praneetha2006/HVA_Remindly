@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { topicsAPI, aiAPI } from '../services/api';
+import { topicsAPI, aiAPI,revisionAPI } from '../services/api';
 import { Header } from '../components/Header';
 import '../styles/TopicDetail.css';
 

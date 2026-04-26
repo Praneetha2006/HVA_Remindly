@@ -79,9 +79,34 @@ export const topicsAPI = {
     return response.json();
   },
 
+  // ❌ OLD (streak trigger nahi karta)
+  /*
   markTopicRevised: async (id) => {
     const response = await fetch(`${API_URL}/topics/${id}/mark-revised`, {
       method: 'POST',
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    return response.json();
+  },
+  */
+};
+
+// 🔥 NEW: Revision API (STREAK YAHI SE CHALEGA)
+export const revisionAPI = {
+  completeRevision: async (revisionId, quizScore) => {
+    const response = await fetch(`${API_URL}/revisions/${revisionId}/complete`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({ quizScore }),
+    });
+    return response.json();
+  },
+
+  getRevisions: async () => {
+    const response = await fetch(`${API_URL}/revisions`, {
       headers: { Authorization: `Bearer ${getToken()}` },
     });
     return response.json();
