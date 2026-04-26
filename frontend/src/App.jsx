@@ -9,6 +9,7 @@ import { Dashboard } from './pages/Dashboard';
 import { AddTopic } from './pages/AddTopic';
 import { MyTopics } from './pages/MyTopics';
 import { TopicDetail } from './pages/TopicDetail';
+import { StartQuiz } from './pages/StartQuiz';
 import { Leaderboard } from './pages/Leaderboard';
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
               <Route path="/topics/:id/edit" element={<AddTopic />} />
               <Route path="/topics" element={<MyTopics />} />
               <Route path="/topics/:id" element={<TopicDetail />} />
+              <Route path="/quiz" element={<StartQuiz />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/" element={<Navigate to="/dashboard" />} />
             </Routes>

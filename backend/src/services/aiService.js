@@ -11,13 +11,26 @@ const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 export const generateAdaptiveQuestions = async (title, explanation) => {
   try {
+    // Add randomization seed to ensure different questions each time
+    const timestamp = new Date().getTime();
+    const randomSeed = Math.floor(Math.random() * 10000);
+    
     const prompt = `
-Generate 10 quiz questions for adaptive assessment: 3 easy, 3 medium, 3 hard, 1 other (mix of any level).
+Generate 10 NEW and UNIQUE quiz questions (different from previous attempts) for adaptive assessment: 3 easy, 3 medium, 3 hard, 1 other.
 
 Topic: ${title}
+Random Seed: ${randomSeed}
+Generation Time: ${timestamp}
 
 Explanation:
 ${explanation}
+
+IMPORTANT: Create NEW questions each time. Vary question types:
+- Some asking for definitions
+- Some asking for applications
+- Some asking for comparisons
+- Some asking for analysis
+- Some asking for synthesis
 
 Return ONLY valid JSON (no markdown, no code blocks):
 {
@@ -53,83 +66,101 @@ Each question must have: question, options (4 options), correctAnswer, explanati
 
 const generateFallbackQuiz = (title, explanation) => {
   const concepts = explanation.split('.').filter(s => s.trim().length > 10).slice(0, 3);
+  const randomFactor = Math.floor(Math.random() * 100); // Add randomization
+  
+  // Vary questions based on randomization
+  const easyQuestions = [
+    {
+      question: `What is the main topic discussed?`,
+      options: [title, "History", "Science", "Literature"],
+      correctAnswer: title,
+      explanation: `The main topic is ${title}`,
+      difficulty: "easy"
+    },
+    {
+      question: `Which of the following is related to ${title}?`,
+      options: [title, "Unrelated concept", "Random fact", "Other topic"],
+      correctAnswer: title,
+      explanation: `${title} is directly related to the main concept`,
+      difficulty: "easy"
+    },
+    {
+      question: `Can you describe what ${title} is?`,
+      options: [explanation.substring(0, 30) + "...", "Completely unrelated", "Historical event", "Mathematical formula"],
+      correctAnswer: explanation.substring(0, 30) + "...",
+      explanation: `${title} refers to the concept explained in the material`,
+      difficulty: "easy"
+    },
+  ];
   
   return {
-    easy: [
-      {
-        question: `What is the main topic discussed?`,
-        options: [title, "History", "Science", "Literature"],
-        correctAnswer: title,
-        explanation: `The main topic is ${title}`,
-        difficulty: "easy"
-      },
-      {
-        question: `Which of the following is related to ${title}?`,
-        options: [title, "Unrelated concept", "Random fact", "Other topic"],
-        correctAnswer: title,
-        explanation: `${title} is directly related to the main concept`,
-        difficulty: "easy"
-      },
-      {
-        question: `${title} is primarily about:`,
-        options: [explanation.substring(0, 50) + "...", "Something else", "Another thing", "Not related"],
-        correctAnswer: explanation.substring(0, 50) + "...",
-        explanation: `${title} focuses on understanding key concepts`,
-        difficulty: "easy"
-      }
-    ],
+    easy: easyQuestions.sort(() => Math.random() - 0.5).slice(0, 3),
     medium: [
       {
-        question: `Based on the explanation, what is a key aspect of ${title}?`,
+        question: `What is a key characteristic of ${title}?`,
         options: ["Understanding core concepts", "Memorization only", "Ignoring details", "Random facts"],
         correctAnswer: "Understanding core concepts",
-        explanation: `A key aspect is understanding the core concepts thoroughly`,
+        explanation: `A key characteristic is understanding the core concepts thoroughly`,
         difficulty: "medium"
       },
       {
-        question: `How would you explain ${title} to someone?`,
-        options: ["Using key concepts", "With memorized facts", "Through random examples", "Without explanation"],
-        correctAnswer: "Using key concepts",
-        explanation: `The best approach is to explain through key concepts and practical examples`,
+        question: `How would you best describe ${title}?`,
+        options: ["Using theoretical frameworks", "With memorized facts only", "Through random examples", "Without any analysis"],
+        correctAnswer: "Using theoretical frameworks",
+        explanation: `${title} is best described using proper theoretical frameworks`,
         difficulty: "medium"
       },
       {
-        question: `What is important to understand about ${title}?`,
-        options: ["The underlying principles", "Just the definitions", "Only examples", "Memorized facts"],
-        correctAnswer: "The underlying principles",
-        explanation: `Understanding the underlying principles is crucial for ${title}`,
+        question: `Which best captures the essence of ${title}?`,
+        options: ["The interconnected principles", "Just the definitions", "Only surface-level examples", "Isolated facts"],
+        correctAnswer: "The interconnected principles",
+        explanation: `The essence lies in understanding how different principles interconnect`,
+        difficulty: "medium"
+      },
+      {
+        question: `What is essential for mastering ${title}?`,
+        options: ["Deep understanding and application", "Surface-level memorization", "Ignoring context", "Passive reading"],
+        correctAnswer: "Deep understanding and application",
+        explanation: `Mastery requires both deep understanding and practical application`,
         difficulty: "medium"
       }
-    ],
+    ].sort(() => Math.random() - 0.5).slice(0, 3),
     hard: [
       {
-        question: `How can you apply knowledge of ${title} in practice?`,
-        options: ["Through analysis and reasoning", "By memorization alone", "Ignoring theory", "Random guessing"],
-        correctAnswer: "Through analysis and reasoning",
-        explanation: `Applying ${title} requires analysis and critical reasoning`,
+        question: `How can you critically apply knowledge of ${title}?`,
+        options: ["Through synthesis and advanced reasoning", "By memorization alone", "Avoiding theory", "Superficial analysis"],
+        correctAnswer: "Through synthesis and advanced reasoning",
+        explanation: `Critical application requires advanced reasoning and synthesis`,
         difficulty: "hard"
       },
       {
-        question: `What are the implications of understanding ${title}?`,
-        options: ["Better decision-making and problem-solving", "No real impact", "Confusion", "Wasted time"],
-        correctAnswer: "Better decision-making and problem-solving",
-        explanation: `Understanding ${title} leads to improved decision-making abilities`,
+        question: `What broader implications emerge from studying ${title}?`,
+        options: ["Systemic understanding and pattern recognition", "No significant impact", "Narrow specialization only", "Theoretical confusion"],
+        correctAnswer: "Systemic understanding and pattern recognition",
+        explanation: `${title} enables broader systemic understanding across domains`,
         difficulty: "hard"
       },
       {
-        question: `Which scenario best demonstrates ${title}?`,
-        options: ["A real-world application of concepts", "A random event", "Unrelated situation", "Fictional scenario"],
-        correctAnswer: "A real-world application of concepts",
-        explanation: `${title} is best demonstrated through real-world applications`,
+        question: `Which complex scenario best tests mastery of ${title}?`,
+        options: ["Multi-faceted real-world problem", "Simple textbook case", "Completely unrelated situation", "Hypothetical only"],
+        correctAnswer: "Multi-faceted real-world problem",
+        explanation: `True mastery shows through solving complex, real-world problems`,
+        difficulty: "hard"
+      },
+      {
+        question: `How does ${title} connect to broader principles?`,
+        options: ["Through interconnected frameworks", "As isolated concept", "Without broader context", "Randomly associated"],
+        correctAnswer: "Through interconnected frameworks",
+        explanation: `${title} gains depth when connected to broader conceptual frameworks`,
         difficulty: "hard"
       }
-    ],
+    ].sort(() => Math.random() - 0.5).slice(0, 3),
     other: [
       {
-        question: `How would you integrate knowledge of ${title} with other subjects?`,
-        options: ["By finding connections with other concepts", "By ignoring other subjects", "By memorizing facts", "By random associations"],
-        correctAnswer: "By finding connections with other concepts",
-        explanation: `Integrating knowledge across subjects shows deeper understanding`,
+        question: `How would you integrate ${title} with related concepts?`,
+        options: ["By identifying meaningful connections", "By ignoring relationships", "By rote memorization", "By random linking"],
+        correctAnswer: "By identifying meaningful connections",
+        explanation: `Integration through meaningful connections shows comprehensive understanding`,
         difficulty: "medium"
       }
     ]

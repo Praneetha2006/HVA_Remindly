@@ -1,109 +1,187 @@
-.leaderboard {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.leaderboard-page {
   min-height: 100vh;
+  background: #080d1a;
+  color: #ffffff;
+  padding: 24px 34px;
+}
+
+.leaderboard-header {
+  margin-bottom: 28px;
+}
+
+.leaderboard-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #cbd5e1;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.loader {
+  font-size: 16px;
+  color: #94a3b8;
+}
+
+.error-state {
+  background: #1b2638;
+  border-left: 4px solid #ef4444;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 28px;
+}
+
+.error-state p {
+  color: #fca5a5;
+  margin: 0;
 }
 
 .leaderboard-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 30px 20px;
-}
-
-.leaderboard-container h2 {
-  color: white;
-  margin-bottom: 30px;
-  font-size: 2rem;
-  text-align: center;
+  background: #1b2638;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  border: 1px solid #26364f;
 }
 
 .leaderboard-table {
   width: 100%;
-  background: white;
   border-collapse: collapse;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .leaderboard-table thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #0f1419;
+  border-bottom: 2px solid #26364f;
 }
 
 .leaderboard-table th {
-  color: white;
-  padding: 18px;
+  color: #cbd5e1;
+  padding: 16px 20px;
   text-align: left;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rank-col {
+  width: 80px;
+}
+
+.name-col {
+  flex: 1;
+}
+
+.points-col {
+  width: 100px;
+}
+
+.streak-col {
+  width: 100px;
 }
 
 .leaderboard-table td {
-  padding: 16px 18px;
-  border-bottom: 1px solid #e0e0e0;
-  color: #333;
+  padding: 16px 20px;
+  border-bottom: 1px solid #26364f;
+  color: #cbd5e1;
+  font-size: 14px;
 }
 
 .leaderboard-table tbody tr {
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .leaderboard-table tbody tr:hover {
-  background-color: #f8f9fa;
+  background: #232f3f;
 }
 
 .leaderboard-table tbody tr.top-3 {
-  background: #fff9e6;
+  background: rgba(99, 102, 241, 0.1);
 }
 
 .leaderboard-table tbody tr.top-3:hover {
-  background: #fffbf0;
+  background: rgba(99, 102, 241, 0.15);
 }
 
-.leaderboard-table .rank {
+.leaderboard-table tbody tr.rank-1 {
+  border-left: 3px solid #fbbf24;
+}
+
+.leaderboard-table tbody tr.rank-2 {
+  border-left: 3px solid #a0aec0;
+}
+
+.leaderboard-table tbody tr.rank-3 {
+  border-left: 3px solid #d97706;
+}
+
+.rank-cell {
   font-weight: 700;
-  font-size: 1.2rem;
-  width: 60px;
+  font-size: 18px;
+  color: #ffffff;
 }
 
-.leaderboard-table .points {
+.name-cell {
   font-weight: 600;
-  color: #ffc107;
+  color: #ffffff;
 }
 
-.leaderboard-table .streak {
+.points-cell {
   font-weight: 600;
-  color: #ff6b6b;
+  color: #fbbf24;
 }
 
-.leaderboard-table tbody tr:nth-child(1) {
-  background: #fffbf0;
-  border-top: 3px solid #ffc107;
+.streak-cell {
+  font-weight: 600;
+  color: #f87171;
 }
 
-.leaderboard-table tbody tr:nth-child(2) {
-  background: #f0f8ff;
-}
-
-.leaderboard-table tbody tr:nth-child(3) {
-  background: #fff5e6;
+.leaderboard-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 @media (max-width: 768px) {
-  .leaderboard-container {
-    padding: 20px;
+  .leaderboard-page {
+    padding: 16px 20px;
   }
 
-  .leaderboard-container h2 {
-    font-size: 1.5rem;
+  .leaderboard-header h1 {
+    font-size: 24px;
   }
 
   .leaderboard-table th,
   .leaderboard-table td {
-    padding: 12px;
-    font-size: 0.9rem;
+    padding: 12px 14px;
+    font-size: 13px;
   }
 
-  .leaderboard-table .rank {
-    width: 50px;
+  .rank-col {
+    width: 60px;
+  }
+
+  .points-col,
+  .streak-col {
+    width: 80px;
+  }
+}@media (max-width: 640px) {
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .rank-cell {
+    font-size: 16px;
   }
 }

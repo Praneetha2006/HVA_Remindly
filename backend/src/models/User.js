@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema(
       default: 0
     },
 
+    streakLastUpdatedAt: {
+      type: Date
+    },
+
     totalRevisions: {
       type: Number,
       default: 0

@@ -39,6 +39,17 @@ const topicSchema = new mongoose.Schema(
       type: Date
     },
 
+    isCompleted: {
+      type: Boolean,
+      default: false
+    },
+
+    status: {
+      type: String,
+      enum: ['upcoming', 'dueToday', 'overdue', 'completed'],
+      default: 'upcoming'
+    },
+
     revisionSettings: {
       isCustom: {
         type: Boolean,
