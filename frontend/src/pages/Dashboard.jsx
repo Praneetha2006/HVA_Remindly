@@ -31,7 +31,7 @@ const revisionsData = revisionsRes.data || revisionsRes;
         // 🔥 MAIN FIX
         const revisedSet = new Set(
           revisionsData
-            .filter(r => r.completedDate)
+            .filter(r => r.completedDate && r.topic)
             .map(r => r.topic._id)
         );
 

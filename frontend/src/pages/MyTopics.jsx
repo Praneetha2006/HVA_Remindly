@@ -66,18 +66,6 @@ export const MyTopics = () => {
   };
 
   // Memory strength helpers (unique to MyTopics)
-  const getMemoryStrengthClass = (strength) => {
-    if (strength === undefined) return 'badge-new';
-    if (strength >= 70) return 'badge-strong';
-    if (strength >= 40) return 'badge-medium';
-    return 'badge-weak';
-  };
-
-  const getMemoryStrengthText = (strength) => {
-    if (strength === undefined) return 'New';
-    return `${strength}%`;
-  };
-
   const filteredTopics = getFilteredTopics();
 
   return (
@@ -174,12 +162,9 @@ export const MyTopics = () => {
                     <p className="topic-description">{topic.explanation}</p>
                   </div>
 
-                  {/* Revision Info Row: Text + Memory Badge */}
+                  {/* Revision Info Row */}
                   <div className="card-revision-row">
                     <span className="revision-text">{getRevisionInfo(topic)}</span>
-                    <div className={`memory-badge ${getMemoryStrengthClass(topic.memoryStrength)}`}>
-                      {getMemoryStrengthText(topic.memoryStrength)}
-                    </div>
                   </div>
 
                   {/* Bottom Row: Revise Button + Settings Icon */}

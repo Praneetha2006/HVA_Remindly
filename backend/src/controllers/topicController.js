@@ -269,13 +269,55 @@ export const markTopicRevised = async (req, res) => {
 
     await topic.save();
 
-    // Update user points and streak
+    // 🔥 Update user points and streak (only once per day)
+    const user = await User.findById(req.user._id);
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const last = user.lastStreakDate
+      ? new Date(user.lastStreakDate)
+      : null;
+
+    // Set last to midnight for comparison
+    if (last) {
+      last.setHours(0, 0, 0, 0);
+    }
+
+    const isSameDay =
+      last &&
+      last.getFullYear() === today.getFullYear() &&
+      last.getMonth() === today.getMonth() &&
+      last.getDate() === today.getDate();
+
+    const isYesterday =
+      last &&
+      last.getFullYear() === yesterday.getFullYear() &&
+      last.getMonth() === yesterday.getMonth() &&
+      last.getDate() === yesterday.getDate();
+
+    let updateQuery = {
+      $inc: { points: 10 }
+    };
+
+    // Only increment streak if not already done today
+    if (!isSameDay) {
+      if (isYesterday) {
+        // Continuing streak from yesterday
+        updateQuery.$inc.streak = 1;
+      } else {
+        // Streak broken, reset to 1
+        updateQuery.$set = { streak: 1 };
+      }
+      updateQuery.$set = { ...updateQuery.$set, lastStreakDate: new Date() };
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
-      { 
-        $inc: { points: 10, streak: 1 },
-        streakLastUpdatedAt: new Date()
-      },
+      updateQuery,
       { new: true }
     );
 

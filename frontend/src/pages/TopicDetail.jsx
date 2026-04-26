@@ -68,19 +68,19 @@ export const TopicDetail = () => {
               setTimeout(() => {
                 navigate('/topics');
               }, 2000);
+            } else {
+              setRevisionMarked(true);
             }
-          } else {
+          } catch (error) {
+            console.error('Error submitting quiz:', error);
             setRevisionMarked(true);
+          } finally {
+            setMarkingRevision(false);
           }
-        } catch (error) {
-          console.error('Error submitting quiz:', error);
-          setRevisionMarked(true);
-        } finally {
-          setMarkingRevision(false);
-        }
-      };
+        };
 
-      submitAndMark();
+        markRevision();
+      }
     }
   }, [stage, quizAnswers, revisionMarked, markingRevision, id, navigate]);
 

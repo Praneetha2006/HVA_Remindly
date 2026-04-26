@@ -134,11 +134,6 @@ export const StartQuiz = () => {
                       <span className="meta-item">
                         📅 {getStatusLabel(topic.nextRevisionAt)}
                       </span>
-                      {topic.memoryStrength !== undefined && (
-                        <span className="meta-item">
-                          💪 {topic.memoryStrength}% strength
-                        </span>
-                      )}
                     </div>
                   </div>
                   <button 

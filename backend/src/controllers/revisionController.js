@@ -121,9 +121,17 @@ export const markRevisionComplete = async (req, res) => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+
       const last = user.lastStreakDate
         ? new Date(user.lastStreakDate)
         : null;
+
+      // Set last to midnight for comparison
+      if (last) {
+        last.setHours(0, 0, 0, 0);
+      }
 
       const isSameDay =
         last &&
@@ -131,10 +139,22 @@ export const markRevisionComplete = async (req, res) => {
         last.getMonth() === today.getMonth() &&
         last.getDate() === today.getDate();
 
+      const isYesterday =
+        last &&
+        last.getFullYear() === yesterday.getFullYear() &&
+        last.getMonth() === yesterday.getMonth() &&
+        last.getDate() === yesterday.getDate();
+
       if (completedCount > 0) {
         if (!isSameDay) {
-          updateQuery.$inc.streak = 1;
-          updateQuery.$set = { lastStreakDate: new Date() };
+          if (isYesterday) {
+            // Continuing streak from yesterday
+            updateQuery.$inc.streak = 1;
+          } else {
+            // Streak broken, reset to 1
+            updateQuery.$set = { streak: 1 };
+          }
+          updateQuery.$set = { ...updateQuery.$set, lastStreakDate: new Date() };
         }
 
         if (completedCount === todayRevisions.length) {
