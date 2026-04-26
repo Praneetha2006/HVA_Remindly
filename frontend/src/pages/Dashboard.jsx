@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { authAPI, topicsAPI } from "../services/api";
+import { authAPI, topicsAPI, revisionAPI } from "../services/api";
 import { calculateTopicStatus, getStatusLabel, getStatusBadgeClass, getDotColor, getRevisionInfo, parseRevisionDate } from "../services/topicUtils";
 import "../styles/Dashboard.css";
 
@@ -12,39 +12,49 @@ export const Dashboard = () => {
   const [error, setError] = useState('');
 
   // Fetch user and topics data
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        setError('');
+useEffect(() => {
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError('');
 
-        // Fetch user data
-        const userData = await authAPI.getCurrentUser();
-        if (userData.success) {
-          setUser(userData.user);
-        }
-
-        // Fetch topics data
-        const topicsData = await topicsAPI.getAllTopics();
-        if (topicsData.success && topicsData.topics) {
-          setTopics(topicsData.topics);
-        }
-
-        // Check and update streak
-        if (userData.success) {
-          await checkStreak(userData.user);
-        }
-      } catch (err) {
-        setError('Failed to load dashboard data');
-        console.error('Error fetching dashboard data:', err);
-      } finally {
-        setLoading(false);
+      const userData = await authAPI.getCurrentUser();
+      if (userData.success) {
+        setUser(userData.user);
       }
-    };
 
-    fetchDashboardData();
-  }, []);
+      const topicsData = await topicsAPI.getAllTopics();
+      const revisionsRes = await revisionAPI.getRevisions();
+const revisionsData = revisionsRes.data || revisionsRes;
+      if (topicsData.success && topicsData.topics) {
 
+        // 🔥 MAIN FIX
+        const revisedSet = new Set(
+          revisionsData
+            .filter(r => r.completedDate)
+            .map(r => r.topic._id)
+        );
+
+        const updatedTopics = topicsData.topics.map(topic => ({
+          ...topic,
+          isRevised: revisedSet.has(topic._id)
+        }));
+
+        setTopics(updatedTopics);
+        console.log(topicsData.topics);
+console.log(revisionsData);
+      }
+
+    } catch (err) {
+      console.error(err);
+      setError('Failed to load dashboard');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchDashboardData();
+}, []);
   // Calculate statistics
   const calculateStats = () => {
     const today = new Date();
@@ -55,7 +65,7 @@ export const Dashboard = () => {
     let revised = 0;
 
     topics.forEach(topic => {
-      if (topic.status === 'revised') revised++;
+      if (topic.isRevised) revised++;
       
       if (topic.nextRevisionAt && !topic.isCompleted) {
         // Parse the date string (YYYY-MM-DD format) to avoid timezone issues

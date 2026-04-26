@@ -178,3 +178,26 @@ export const settingsAPI = {
     return response.json();
   },
 };
+
+export const revisionAPI = {
+  completeRevision: async (revisionId, quizScore) => {
+    const response = await fetch(`${API_URL}/revisions/${revisionId}/complete`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({ quizScore }),
+    });
+    return response.json();
+  },
+
+  getRevisions: async () => {
+    const response = await fetch(`${API_URL}/revisions`, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
+    return response.json();
+  },
+};

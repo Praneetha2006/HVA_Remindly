@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { topicsAPI, aiAPI, quizAPI } from '../services/api';
+import { topicsAPI, aiAPI } from '../services/api';
 import { Header } from '../components/Header';
 import '../styles/TopicDetail.css';
 
@@ -48,30 +48,16 @@ export const TopicDetail = () => {
     fetchTopic();
   }, [id]);
 
-  // Submit quiz result and mark topic as revised when quiz is completed with score >= 3
+  // Mark topic as revised when quiz is completed with score >= 3
   useEffect(() => {
     if (stage === 'result' && quizAnswers.length === 5 && !revisionMarked && !markingRevision) {
       const correctCount = quizAnswers.filter(a => a.isCorrect).length;
       const scorePercentage = (correctCount / 5) * 100;
 
-      const submitAndMark = async () => {
-        setMarkingRevision(true);
-        try {
-          // Submit quiz result to update stats
-          const quizSubmission = await quizAPI.submitQuizResult(
-            id,
-            correctCount,
-            5,
-            'adaptive'
-          );
-          
-          if (quizSubmission.message || quizSubmission.success) {
-            console.log('✅ Quiz result submitted');
-            console.log('Stats updated:', quizSubmission.stats);
-          }
-
-          // Mark topic as revised if score >= 60%
-          if (scorePercentage >= 60) {
+      if (correctCount >= 3) {
+        const markRevision = async () => {
+          setMarkingRevision(true);
+          try {
             const response = await topicsAPI.markTopicRevised(id);
             
             if (response.message || response.success) {
